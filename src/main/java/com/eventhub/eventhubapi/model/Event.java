@@ -6,62 +6,51 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Event Entity Class
+/*
+ * Model class representing an event in the EventHub system.
+ * This object stores event data used internally by the application.
  *
- * Represents an event within the EventHub platform.
- * This model is used internally for business logic and
- * in-memory storage.
- *
- * JSON serialization rules:
- * - Null fields are excluded from responses.
- * - Date fields are formatted using ISO-8601 standard.
+ * JSON rules:
+ * - Null fields are not included in responses.
+ * - Date fields follow the ISO date format.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Event {
 
-    // ========================
-    // Fields
-    // ========================
-
+    // unique identifier for the event
     private Long id;
+
+    // name of the event
     private String name;
+
+    // description of the event
     private String description;
+
+    // ticket price for attending the event
     private BigDecimal ticketPrice;
+
+    // category the event belongs to
     private String category;
+
+    // indicates if the event is currently active
     private Boolean active;
 
-    /**
-     * Event date formatted as ISO-8601:
-     * yyyy-MM-dd'T'HH:mm:ss
-     */
+    // date and time the event will take place
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime eventDate;
 
-    /**
-     * Timestamp when event was created.
-     */
+    // timestamp when the event was created
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * Timestamp when event was last updated.
-     */
+    // timestamp when the event was last updated
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    // ========================
-    // Constructors
-    // ========================
-
-    /**
-     * Default constructor required for JSON deserialization.
-     */
+    // default constructor
     public Event() {}
 
-    /**
-     * Full constructor used internally for entity creation.
-     */
+    // constructor used to create an event object with values
     public Event(Long id,
                  String name,
                  String description,
@@ -83,9 +72,7 @@ public class Event {
         this.updatedAt = updatedAt;
     }
 
-    // ========================
-    // Getters and Setters
-    // ========================
+    // getters and setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

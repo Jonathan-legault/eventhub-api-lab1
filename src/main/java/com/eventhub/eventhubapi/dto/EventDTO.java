@@ -5,73 +5,41 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * EventDTO (Data Transfer Object)
- *
- * Used to transfer event data between the API layer
- * and client applications.
- *
- * This object is:
- * - Returned in API responses
- * - Received in API requests
+/*
+ * DTO used to transfer event data between the API and the client.
+ * This object is typically returned in API responses when events
+ * are retrieved from the system.
  *
  * Null values are excluded from JSON responses.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventDTO {
 
-    /**
-     * Unique identifier of the event.
-     * Included to support ID-based operations (GET, PUT, DELETE).
-     */
+    // unique identifier of the event
     private Long id;
 
-    /**
-     * Name of the event.
-     */
+    // name of the event
     private String name;
 
-    /**
-     * Detailed description of the event.
-     */
+    // description of the event
     private String description;
 
-    /**
-     * Price of the event ticket.
-     */
+    // ticket price for the event
     private BigDecimal ticketPrice;
 
-    /**
-     * Category of the event (e.g., Technology, Music, Business).
-     */
+    // category the event belongs to
     private String category;
 
-    /**
-     * Indicates whether the event is currently active.
-     */
+    // indicates whether the event is active
     private Boolean active;
 
-    /**
-     * Date and time when the event will take place.
-     */
+    // date and time when the event takes place
     private LocalDateTime eventDate;
 
-    /**
-     * Default constructor required for JSON deserialization.
-     */
+    // default constructor (needed for JSON serialization/deserialization)
     public EventDTO() {}
 
-    /**
-     * Full constructor used for mapping entity data to DTO.
-     *
-     * @param id          event ID
-     * @param name        event name
-     * @param description event description
-     * @param ticketPrice ticket price
-     * @param category    event category
-     * @param active      event active status
-     * @param eventDate   event date and time
-     */
+    // constructor used when mapping event data to this DTO
     public EventDTO(Long id,
                     String name,
                     String description,
@@ -88,28 +56,33 @@ public class EventDTO {
         this.eventDate = eventDate;
     }
 
-    // ========================
-    // Getters and Setters
-    // ========================
+    // getters and setters
 
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
+
     public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
+
     public void setDescription(String description) { this.description = description; }
 
     public BigDecimal getTicketPrice() { return ticketPrice; }
+
     public void setTicketPrice(BigDecimal ticketPrice) { this.ticketPrice = ticketPrice; }
 
     public String getCategory() { return category; }
+
     public void setCategory(String category) { this.category = category; }
 
     public Boolean getActive() { return active; }
+
     public void setActive(Boolean active) { this.active = active; }
 
     public LocalDateTime getEventDate() { return eventDate; }
+
     public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
 }

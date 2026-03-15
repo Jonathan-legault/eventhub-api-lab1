@@ -3,45 +3,32 @@ package com.eventhub.eventhubapi.repository;
 import com.eventhub.eventhubapi.model.Event;
 import java.util.List;
 
-/**
- * EventRepository
+/*
+ * Repository interface for Event data.
+ * Defines the basic CRUD operations that can be
+ * performed on events.
  *
- * Repository interface defining CRUD operations
- * for Event persistence.
- *
- * This abstraction allows different implementations
- * (e.g., in-memory, database, JPA) without changing
- * business logic.
+ * The actual logic is implemented in EventRepositoryImpl.
  */
 public interface EventRepository {
 
-    /**
-     * Retrieves all stored events.
-     *
-     * @return list of all events
+    /*
+     * Returns all events stored in the repository.
      */
     List<Event> findAll();
 
-    /**
-     * Retrieves a specific event by its ID.
-     *
-     * @param id the unique identifier of the event
-     * @return the matching Event, or null if not found
+    /*
+     * Finds an event by its unique ID.
      */
     Event findById(Long id);
 
-    /**
+    /*
      * Saves a new event or updates an existing one.
-     *
-     * @param event the event to persist
-     * @return the saved event
      */
     Event save(Event event);
 
-    /**
-     * Deletes an event by its ID.
-     *
-     * @param id the unique identifier of the event
+    /*
+     * Deletes an event based on its ID.
      */
     void delete(Long id);
 }

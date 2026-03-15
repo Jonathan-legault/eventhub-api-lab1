@@ -15,15 +15,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+ * Service implementation for event-related business logic.
+ * This class handles retrieving, creating, updating, deleting,
+ * filtering, sorting, and paginating events.
+ */
 @Service
 public class EventServiceImpl implements EventService {
 
     private final EventRepository repository;
 
+    // constructor injection of the repository
     public EventServiceImpl(EventRepository repository) {
         this.repository = repository;
     }
 
+    /*
+     * Converts an Event entity into an EventDTO.
+     * This is used when returning event data to the client.
+     */
     private EventDTO toDTO(Event event) {
         return new EventDTO(
                 event.getId(),
@@ -36,6 +46,10 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /*
+     * Converts a CreateEventDTO into an Event entity.
+     * createdAt and updatedAt are set to the current time.
+     */
     private Event toEntity(CreateEventDTO dto) {
         return new Event(
                 null,
@@ -50,6 +64,11 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /*
+     * Returns all events with support for filtering,
+     * sorting, and pagination.
+     * The results are cached to improve performance.
+     */
     @Override
     @Cacheable("events")
     public List<EventDTO> getAllEvents(
@@ -63,31 +82,31 @@ public class EventServiceImpl implements EventService {
             String endDate
     ) {
 
+        // get all events from the repository
         List<Event> events = repository.findAll();
 
-        //Filter by category
+        // filter by category if provided
         if (category != null) {
             events = events.stream()
                     .filter(e -> e.getCategory().equalsIgnoreCase(category))
                     .toList();
         }
 
-        //Filter by minimum price
+        // filter by minimum price if provided
         if (minPrice != null) {
             events = events.stream()
                     .filter(e -> e.getTicketPrice().doubleValue() >= minPrice)
                     .toList();
         }
 
-        //Filter by maximum price
+        // filter by maximum price if provided
         if (maxPrice != null) {
             events =  events.stream()
                     .filter(e -> e.getTicketPrice().doubleValue() <= maxPrice)
                     .toList();
         }
 
-
-        // Filter by start date
+        // filter by start date if provided
         if (startDate != null) {
             LocalDateTime start = LocalDateTime.parse(startDate);
             events = events.stream()
@@ -95,7 +114,7 @@ public class EventServiceImpl implements EventService {
                     .toList();
         }
 
-        // Filter by end date
+        // filter by end date if provided
         if (endDate != null) {
             LocalDateTime start = LocalDateTime.parse(startDate);
             events = events.stream()
@@ -103,21 +122,23 @@ public class EventServiceImpl implements EventService {
                     .toList();
         }
 
-        //Pagination
+        // calculate indexes for pagination
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, events.size());
 
+        // return empty list if the page is out of range
         if (startIndex > events.size()) {
             return List.of();
         }
 
-        // Sorting
+        // split the sort parameter into field and direction
         String[] sortParts = sort.split(",");
         String sortField = sortParts[0];
         String sortDirection = sortParts.length > 1 ? sortParts[1] : "asc";
 
         Comparator<Event> comparator;
 
+        // choose the field to sort by
         switch (sortField) {
             case "ticketPrice":
                 comparator = Comparator.comparing(Event::getTicketPrice);
@@ -134,20 +155,27 @@ public class EventServiceImpl implements EventService {
                 break;
         }
 
+        // reverse sort order if descending is requested
         if ("desc".equalsIgnoreCase(sortDirection)) {
             comparator = comparator.reversed();
         }
 
+        // sort the events
         events = events.stream()
                 .sorted(comparator)
                 .toList();
 
+        // return the requested page after converting entities to DTOs
         return events.subList(startIndex, endIndex)
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
+    /*
+     * Finds an event by its ID.
+     * Throws a custom exception if the event does not exist.
+     */
     @Override
     public EventDTO getEventById(Long id) {
         Event event = repository.findById(id);
@@ -157,6 +185,10 @@ public class EventServiceImpl implements EventService {
         return toDTO(event);
     }
 
+    /*
+     * Creates a new event.
+     * The events cache is cleared after adding a new record.
+     */
     @Override
     @CacheEvict(value = "events", allEntries = true)
     public EventDTO createEvent(CreateEventDTO dto) {
@@ -164,6 +196,11 @@ public class EventServiceImpl implements EventService {
         return toDTO(repository.save(event));
     }
 
+    /*
+     * Updates an existing event.
+     * Throws an exception if the event does not exist.
+     * The events cache is cleared after updating.
+     */
     @Override
     @CacheEvict(value = "events", allEntries = true)
     public EventDTO updateEvent(Long id, CreateEventDTO dto) {
@@ -172,6 +209,7 @@ public class EventServiceImpl implements EventService {
             throw new EventNotFoundException("Event not found with id: " + id);
         }
 
+        // update the existing event fields
         existing.setName(dto.getName());
         existing.setDescription(dto.getDescription());
         existing.setTicketPrice(dto.getTicketPrice());
@@ -183,6 +221,11 @@ public class EventServiceImpl implements EventService {
         return toDTO(repository.save(existing));
     }
 
+    /*
+     * Deletes an event by its ID.
+     * Throws an exception if the event does not exist.
+     * The events cache is cleared after deleting.
+     */
     @Override
     @CacheEvict(value = "events", allEntries = true)
     public void deleteEvent(Long id) {
