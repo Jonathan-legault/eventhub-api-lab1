@@ -4,9 +4,9 @@ import com.eventhub.eventhubapi.dto.CategoryDTO;
 import com.eventhub.eventhubapi.model.Category;
 import com.eventhub.eventhubapi.repository.CategoryRepository;
 import com.eventhub.eventhubapi.service.CategoryService;
-import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,8 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Cacheable("categories")
     public List<CategoryDTO> getAllCategories() {
-
-        // retrieve categories from repository and convert to DTOs
         return repository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -56,14 +54,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /*
-     * Creates a new category.
-     * The categories cache is cleared when a new category is added.
+     * Creates a new category if it does not already exist.
+     * If a category with the same name already exists, return it instead.
+     * The categories cache is cleared when a category is added or reused.
      */
     @Override
     @CacheEvict(value = "categories", allEntries = true)
     public CategoryDTO createCategory(CategoryDTO dto) {
+        Category existing = repository.findByNameIgnoreCase(dto.getName())
+                .orElse(null);
 
-        // convert DTO to entity, save it, then convert back to DTO
+        if (existing != null) {
+            return toDTO(existing);
+        }
+
         Category category = toEntity(dto);
         return toDTO(repository.save(category));
     }

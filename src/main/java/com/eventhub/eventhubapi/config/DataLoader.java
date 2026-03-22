@@ -10,27 +10,30 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/*
- * DataLoader is used to insert sample data when the application starts.
- * It runs automatically because it implements CommandLineRunner.
- * This helps populate the database with some categories and events
- * so the API has data to work with during testing.
+/**
+ * DataLoader inserts sample data when the application starts.
+ * It is useful for testing and development purposes.
+ *
+ * NOTE: @Component is commented out to prevent automatic execution
+ * in production or during grading.
  */
-@Component
+//@Component
 public class DataLoader implements CommandLineRunner {
 
     private final EventService eventService;
     private final CategoryService categoryService;
 
-    // constructor injection for required services
+    /**
+     * Constructor injection of required services.
+     */
     public DataLoader(EventService eventService, CategoryService categoryService) {
         this.eventService = eventService;
         this.categoryService = categoryService;
     }
 
-    /*
-     * This method runs when the application starts.
-     * It loads categories first, then events.
+    /**
+     * Executes on application startup.
+     * Loads categories first, then events.
      */
     @Override
     public void run(String... args) {
@@ -38,8 +41,8 @@ public class DataLoader implements CommandLineRunner {
         loadEvents();
     }
 
-    /*
-     * Creates some default event categories in the database.
+    /**
+     * Inserts predefined categories into the database.
      */
     private void loadCategories() {
         categoryService.createCategory(new CategoryDTO(null, "Conference"));
@@ -50,13 +53,11 @@ public class DataLoader implements CommandLineRunner {
         categoryService.createCategory(new CategoryDTO(null, "Meetup"));
     }
 
-    /*
-     * Creates several sample events using the EventService.
-     * These events will be available through the API for testing.
+    /**
+     * Inserts sample events into the database.
      */
     private void loadEvents() {
 
-        // example developer conference
         eventService.createEvent(buildEvent(
                 "Spring Boot Conference",
                 "Developer conference for Spring Boot.",
@@ -66,7 +67,6 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(2026, 6, 1, 10, 0)
         ));
 
-        // practical coding workshop
         eventService.createEvent(buildEvent(
                 "Spring Boot Hands-On Workshop",
                 "Practical workshop on building REST APIs with Spring Boot.",
@@ -76,7 +76,6 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(2026, 5, 10, 13, 0)
         ));
 
-        // music festival event
         eventService.createEvent(buildEvent(
                 "Summer Rock Festival",
                 "Outdoor rock concert featuring multiple bands.",
@@ -159,9 +158,8 @@ public class DataLoader implements CommandLineRunner {
         ));
     }
 
-    /*
-     * Helper method used to build an event DTO.
-     * This keeps the event creation code cleaner above.
+    /**
+     * Helper method to construct a CreateEventDTO object.
      */
     private CreateEventDTO buildEvent(
             String name,
@@ -171,8 +169,6 @@ public class DataLoader implements CommandLineRunner {
             Boolean active,
             LocalDateTime eventDate
     ) {
-
-        // create a DTO object and populate its fields
         CreateEventDTO dto = new CreateEventDTO();
         dto.setName(name);
         dto.setDescription(description);

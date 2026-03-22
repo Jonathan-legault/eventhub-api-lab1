@@ -1,25 +1,21 @@
 package com.eventhub.eventhubapi.repository;
 
 import com.eventhub.eventhubapi.model.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
-/*
- * Repository interface for Category data.
- * Defines the basic operations that can be performed
- * on categories such as retrieving and saving them.
- *
- * The actual implementation is provided in CategoryRepositoryImpl.
+/**
+ * Repository for Category entity.
+ * Provides CRUD operations and custom query methods.
  */
-public interface CategoryRepository {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    /*
-     * Returns all categories stored in the repository.
+    /**
+     * Finds a category by name (case-insensitive).
+     *
+     * @param name category name
+     * @return Optional containing the category if found
      */
-    List<Category> findAll();
-
-    /*
-     * Saves a new category or updates an existing one.
-     */
-    Category save(Category category);
+    Optional<Category> findByNameIgnoreCase(String name);
 }

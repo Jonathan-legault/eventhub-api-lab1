@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
- * REST controller that handles API requests related to events.
- * It allows clients to create, read, update, delete and filter events.
+/**
+ * REST controller for managing event-related API requests.
+ * Supports CRUD operations, filtering, searching, and event statistics.
  */
 @RestController
 @RequestMapping("/api/v1/events")
@@ -18,21 +18,27 @@ public class EventController {
 
     private final EventService service;
 
-    // constructor injection of EventService
-    public EventController(EventService service){
+    /**
+     * Constructor injection of EventService.
+     *
+     * @param service service layer for event operations
+     */
+    public EventController(EventService service) {
         this.service = service;
     }
 
-    /*
-     * GET /api/v1/events
-     * Returns a list of events with optional filtering, sorting and pagination.
+    /**
+     * Returns a list of events with optional filtering, sorting, and pagination.
      *
-     * page - page number (default 0)
-     * size - number of results per page
-     * sort - sorting field and direction
-     * category - optional category filter
-     * minPrice / maxPrice - optional price range
-     * startDate / endDate - optional date range
+     * @param page page number, default is 0
+     * @param size number of records per page, default is 20
+     * @param sort sort field and direction, default is "name,asc"
+     * @param category optional category filter
+     * @param minPrice optional minimum ticket price
+     * @param maxPrice optional maximum ticket price
+     * @param startDate optional start date filter
+     * @param endDate optional end date filter
+     * @return filtered list of events
      */
     @GetMapping
     public List<EventDTO> getAll(
@@ -48,28 +54,34 @@ public class EventController {
         return service.getAllEvents(page, size, sort, category, minPrice, maxPrice, startDate, endDate);
     }
 
-    /*
-     * GET /api/v1/events/{id}
-     * Returns a single event based on its ID.
+    /**
+     * Returns a single event by its ID.
+     *
+     * @param id event ID
+     * @return matching event
      */
     @GetMapping("/{id}")
-    public EventDTO getById(@PathVariable Long id){
+    public EventDTO getById(@PathVariable Long id) {
         return service.getEventById(id);
     }
 
-    /*
-     * POST /api/v1/events
+    /**
      * Creates a new event.
-     * @Valid ensures the request body follows validation rules in CreateEventDTO.
+     *
+     * @param dto validated event request body
+     * @return created event
      */
     @PostMapping
     public EventDTO create(@Valid @RequestBody CreateEventDTO dto) {
         return service.createEvent(dto);
     }
 
-    /*
-     * PUT /api/v1/events/{id}
+    /**
      * Updates an existing event.
+     *
+     * @param id event ID
+     * @param dto validated updated event data
+     * @return updated event
      */
     @PutMapping("/{id}")
     public EventDTO update(@PathVariable Long id,
@@ -77,12 +89,44 @@ public class EventController {
         return service.updateEvent(id, dto);
     }
 
-    /*
-     * DELETE /api/v1/events/{id}
-     * Deletes an event from the system.
+    /**
+     * Deletes an event by its ID.
+     *
+     * @param id event ID
      */
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.deleteEvent(id);
+    }
+
+    /**
+     * Searches events by keyword in name or description.
+     *
+     * @param keyword search keyword
+     * @return list of matching events
+     */
+    @GetMapping("/search")
+    public List<EventDTO> search(@RequestParam String keyword) {
+        return service.searchEvents(keyword);
+    }
+
+    /**
+     * Returns the number of registrations for each event.
+     *
+     * @return event registration count summary
+     */
+    @GetMapping("/stats/registration-counts")
+    public List<String> getRegistrationCountsPerEvent() {
+        return service.getRegistrationCountsPerEvent();
+    }
+
+    /**
+     * Returns the total number of tickets sold for each event.
+     *
+     * @return event ticket sales summary
+     */
+    @GetMapping("/stats/tickets-sold")
+    public List<String> getTotalTicketsSoldPerEvent() {
+        return service.getTotalTicketsSoldPerEvent();
     }
 }

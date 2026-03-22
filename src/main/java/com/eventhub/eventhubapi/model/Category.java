@@ -1,44 +1,63 @@
 package com.eventhub.eventhubapi.model;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /*
- * Model class representing an event category.
- * This class holds basic category data used by the application.
+ * JPA Entity representing an event category.
+ * Maps to the "categories" table in the database.
  */
+@Entity
+@Table(name = "categories")
 public class Category {
 
-    // unique identifier for the category
+    // Primary key
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // name of the category
+    // Category name (must be unique and not null)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    // default constructor
+    // One category can have many events
+    @OneToMany(mappedBy = "category")
+    private List<Event> events = new ArrayList<>();
+
+    // Default constructor (required by JPA)
     public Category() {
     }
 
-    // constructor used to create a category with values
+    // Constructor with fields
     public Category(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    // getter for category id
+    // Getters and setters
+
     public Long getId() {
         return id;
     }
 
-    // setter for category id
     public void setId(Long id) {
         this.id = id;
     }
 
-    // getter for category name
     public String getName() {
         return name;
     }
 
-    // setter for category name
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 }

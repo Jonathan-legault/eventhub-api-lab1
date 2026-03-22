@@ -2,65 +2,99 @@ package com.eventhub.eventhubapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/*
- * Model class representing an event in the EventHub system.
- * This object stores event data used internally by the application.
+/**
+ * JPA entity representing an event in the EventHub system.
+ * Maps to the "events" table in the database.
  *
  * JSON rules:
- * - Null fields are not included in responses.
- * - Date fields follow the ISO date format.
+ * - Null fields are excluded from responses.
+ * - Date fields use ISO date-time format.
  */
+@Entity
+@Table(name = "events")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Event {
 
-    // unique identifier for the event
+    /**
+     * Primary key (auto-generated).
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // name of the event
+    /**
+     * Name of the event.
+     */
+    @Column(nullable = false)
     private String name;
 
-    // description of the event
+    /**
+     * Description of the event.
+     */
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    // ticket price for attending the event
+    /**
+     * Ticket price for the event.
+     */
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal ticketPrice;
 
-    // category the event belongs to
-    private String category;
+    /**
+     * Many events can belong to one category.
+     */
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    // indicates if the event is currently active
+    /**
+     * Indicates whether the event is active.
+     */
+    @Column(nullable = false)
     private Boolean active;
 
-    // date and time the event will take place
+    /**
+     * Date and time when the event takes place.
+     */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(nullable = false)
     private LocalDateTime eventDate;
 
-    // timestamp when the event was created
+    /**
+     * Timestamp when the event was created.
+     */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
-    // timestamp when the event was last updated
+    /**
+     * Timestamp when the event was last updated.
+     */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    // default constructor
-    public Event() {}
+    /**
+     * Default constructor required by JPA.
+     */
+    public Event() {
+    }
 
-    // constructor used to create an event object with values
+    /**
+     * Full constructor used when creating or mapping event objects.
+     */
     public Event(Long id,
                  String name,
                  String description,
                  BigDecimal ticketPrice,
-                 String category,
+                 Category category,
                  Boolean active,
                  LocalDateTime eventDate,
                  LocalDateTime createdAt,
                  LocalDateTime updatedAt) {
-
         this.id = id;
         this.name = name;
         this.description = description;
@@ -72,32 +106,75 @@ public class Event {
         this.updatedAt = updatedAt;
     }
 
-    // getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public BigDecimal getTicketPrice() { return ticketPrice; }
-    public void setTicketPrice(BigDecimal ticketPrice) { this.ticketPrice = ticketPrice; }
+    public String getDescription() {
+        return description;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public BigDecimal getTicketPrice() {
+        return ticketPrice;
+    }
 
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+    public void setTicketPrice(BigDecimal ticketPrice) {
+        this.ticketPrice = ticketPrice;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Category getCategory() {
+        return category;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

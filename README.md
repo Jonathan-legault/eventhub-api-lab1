@@ -223,3 +223,118 @@ The API was tested using:
 The EventHub API implements a structured Spring Boot REST service for managing events and categories. The application demonstrates layered architecture, validation, filtering, pagination, caching, and API documentation.
 
 This project provides a strong foundation for a scalable event management platform.
+
+# Assignment 2 Enhancements
+
+This version of the EventHub API extends Assignment 1 by introducing full database integration, relational data modeling, and advanced querying capabilities.
+
+---
+
+## Database Integration
+
+The application now uses a MySQL database with Spring Data JPA for persistent storage.
+
+### Key Improvements
+
+- Replaced in-memory data with a relational database
+- Implemented ORM using JPA entities
+- Configured database connection via application properties
+
+## Entity Relationships
+
+The system now includes multiple related entities:
+
+- Category → Events (One-to-Many)
+- User → Registrations (One-to-Many)
+- Registration → RegistrationItems (One-to-Many)
+- RegistrationItem → Event (Many-to-One)
+
+These relationships allow complex data interactions and support real-world scenarios such as users registering for multiple events.
+
+## Registration System
+
+A complete registration system has been implemented:
+
+- Users can create registrations
+- Each registration can include multiple events
+- Each registration item stores event and quantity
+
+### Example Request
+
+`POST /registrations`
+
+```json
+{
+  "userId": 1,
+  "items": [
+    {
+      "eventId": 1,
+      "quantity": 2
+    }
+  ]
+}
+```
+
+## Custom Queries (JPQL)
+
+Advanced queries were implemented using JPQL:
+
+- Keyword search across event name and description
+- Count of registrations per event
+- Total tickets sold per event
+- Date range filtering for registrations
+
+### Example Endpoints
+
+- `GET /events/search?keyword=spring`
+- `GET /events/stats/registration-counts`
+- `GET /events/stats/tickets-sold`
+
+## Database Migrations (Flyway)
+
+Flyway is used to manage database schema and seed data.
+
+### Migrations Include
+
+- `V1__create_tables.sql` → creates all tables
+- `V2__seed_data.sql` → inserts categories and events
+- `V3__seed_user_and_registration_data.sql` → inserts test user and registration
+
+Flyway ensures the database is automatically created and populated when the application starts.
+
+## Data Integrity Improvements
+
+- Duplicate event prevention using unique constraints
+- Consistent relational data across tables
+- Removal of repeated seed data from Assignment 1
+
+## Additional Endpoints
+
+### Registration Endpoints
+
+- `GET /registrations/{id}`
+- `GET /registrations/user/{userId}`
+- `GET /registrations/by-date?start=...&end=...`
+
+These endpoints allow retrieval of registrations by ID, user, and date range.
+
+## Testing Enhancements
+
+The application was thoroughly tested using:
+
+- Postman (all endpoints including registrations and queries)
+- Swagger UI for interactive testing
+- MySQL database verification for persistence
+
+## Updated Conclusion
+
+The Assignment 2 version of EventHub API expands the original application into a fully database-driven system.
+
+It demonstrates:
+
+- Relational database design
+- JPA entity relationships
+- Advanced query implementation
+- Database migrations using Flyway
+
+This version provides a scalable backend foundation and prepares the system for future enhancements such as authentication and security in Assignment 3.
