@@ -1,6 +1,6 @@
 INSERT INTO users (username, email, password)
 VALUES
-    ('testuser', 'testuser@example.com', 'password123');
+    ('testuser', 'testuser@example.com', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824');
 
 INSERT INTO registrations (registration_date, user_id)
 VALUES

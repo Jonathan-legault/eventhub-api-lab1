@@ -4,6 +4,8 @@ import com.eventhub.eventhubapi.dto.CreateRegistrationDTO;
 import com.eventhub.eventhubapi.dto.RegistrationDTO;
 import com.eventhub.eventhubapi.service.RegistrationService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,8 +26,9 @@ public class RegistrationController {
 
     /*
      * POST /api/v1/registrations
-     * Creates a new registration.
+     * USER or ADMIN can create a registration.
      */
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     public RegistrationDTO create(@Valid @RequestBody CreateRegistrationDTO dto) {
         return service.createRegistration(dto);
@@ -33,17 +36,30 @@ public class RegistrationController {
 
     /*
      * GET /api/v1/registrations/{id}
-     * Returns a registration by ID.
+     * ADMIN only for now.
+     * Safer than allowing arbitrary ID lookup for normal users.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public RegistrationDTO getById(@PathVariable Long id) {
         return service.getRegistrationById(id);
     }
 
     /*
-     * GET /api/v1/registrations/user/{userId}
-     * Returns all registrations for a specific user.
+     * GET /api/v1/registrations/my
+     * Returns registrations for the currently logged-in user.
      */
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/my")
+    public List<RegistrationDTO> getMyRegistrations(Authentication authentication) {
+        return service.getRegistrationsByUsername(authentication.getName());
+    }
+
+    /*
+     * GET /api/v1/registrations/user/{userId}
+     * ADMIN only.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{userId}")
     public List<RegistrationDTO> getByUser(@PathVariable Long userId) {
         return service.getRegistrationsByUser(userId);
@@ -51,8 +67,9 @@ public class RegistrationController {
 
     /*
      * GET /api/v1/registrations/by-date?start=...&end=...
-     * Returns registrations within a date range.
+     * ADMIN only.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/by-date")
     public List<RegistrationDTO> getByDateRange(@RequestParam LocalDateTime start,
                                                 @RequestParam LocalDateTime end) {

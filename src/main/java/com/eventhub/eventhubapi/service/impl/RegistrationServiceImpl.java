@@ -72,8 +72,14 @@ public class RegistrationServiceImpl implements RegistrationService {
      */
     @Override
     public RegistrationDTO createRegistration(CreateRegistrationDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+
+        String username = org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + username));
 
         Registration registration = new Registration();
         registration.setUser(user);
@@ -96,7 +102,6 @@ public class RegistrationServiceImpl implements RegistrationService {
             savedItems.add(savedItem);
         }
 
-        // 🔥 THIS LINE IS THE KEY FIX
         savedRegistration.setItems(savedItems);
 
         return toDTO(savedRegistration);
@@ -130,6 +135,17 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public List<RegistrationDTO> getRegistrationsByDateRange(LocalDateTime start, LocalDateTime end) {
         return registrationRepository.findByRegistrationDateBetween(start, end)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<RegistrationDTO> getRegistrationsByUsername(String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        return registrationRepository.findByUser_Id(user.getId())
                 .stream()
                 .map(this::toDTO)
                 .toList();

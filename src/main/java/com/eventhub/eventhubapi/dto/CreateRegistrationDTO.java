@@ -2,21 +2,15 @@ package com.eventhub.eventhubapi.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 /**
  * DTO used when creating a new registration.
- * Contains the user ID and a list of registration items.
+ * Contains a list of registration items.
+ * The authenticated user is taken from the JWT/security context.
  */
 public class CreateRegistrationDTO {
-
-    /**
-     * ID of the user creating the registration.
-     */
-    @NotNull(message = "User ID is required")
-    private Long userId;
 
     /**
      * List of items included in the registration.
@@ -30,14 +24,6 @@ public class CreateRegistrationDTO {
      * Default constructor required for JSON deserialization.
      */
     public CreateRegistrationDTO() {
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public List<CreateRegistrationItemDTO> getItems() {

@@ -2,11 +2,13 @@ package com.eventhub.eventhubapi.model;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*
  * JPA Entity representing a user in the EventHub system.
- * This table is used now for registrations and later for authentication.
+ * This table is used for registrations and authentication/authorization.
  */
 @Entity
 @Table(name = "users")
@@ -32,6 +34,15 @@ public class User {
     // One user can have many registrations
     @OneToMany(mappedBy = "user")
     private List<Registration> registrations = new ArrayList<>();
+
+    // A user can have one or more roles
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
@@ -81,5 +92,13 @@ public class User {
 
     public void setRegistrations(List<Registration> registrations) {
         this.registrations = registrations;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

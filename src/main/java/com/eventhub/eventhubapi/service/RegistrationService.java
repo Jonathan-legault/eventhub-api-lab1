@@ -17,5 +17,7 @@ public interface RegistrationService {
 
     List<RegistrationDTO> getRegistrationsByUser(Long userId);
 
+    List<RegistrationDTO> getRegistrationsByUsername(String username);
+
     List<RegistrationDTO> getRegistrationsByDateRange(LocalDateTime start, LocalDateTime end);
 }

@@ -4,6 +4,7 @@ import com.eventhub.eventhubapi.dto.CreateEventDTO;
 import com.eventhub.eventhubapi.dto.EventDTO;
 import com.eventhub.eventhubapi.service.EventService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class EventController {
 
     /**
      * Returns a list of events with optional filtering, sorting, and pagination.
+     * Public endpoint.
      *
      * @param page page number, default is 0
      * @param size number of records per page, default is 20
@@ -56,6 +58,7 @@ public class EventController {
 
     /**
      * Returns a single event by its ID.
+     * Public endpoint.
      *
      * @param id event ID
      * @return matching event
@@ -67,10 +70,12 @@ public class EventController {
 
     /**
      * Creates a new event.
+     * ADMIN only.
      *
      * @param dto validated event request body
      * @return created event
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public EventDTO create(@Valid @RequestBody CreateEventDTO dto) {
         return service.createEvent(dto);
@@ -78,11 +83,13 @@ public class EventController {
 
     /**
      * Updates an existing event.
+     * ADMIN only.
      *
      * @param id event ID
      * @param dto validated updated event data
      * @return updated event
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public EventDTO update(@PathVariable Long id,
                            @Valid @RequestBody CreateEventDTO dto) {
@@ -91,9 +98,11 @@ public class EventController {
 
     /**
      * Deletes an event by its ID.
+     * ADMIN only.
      *
      * @param id event ID
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.deleteEvent(id);
@@ -101,6 +110,7 @@ public class EventController {
 
     /**
      * Searches events by keyword in name or description.
+     * Public endpoint.
      *
      * @param keyword search keyword
      * @return list of matching events
@@ -112,9 +122,11 @@ public class EventController {
 
     /**
      * Returns the number of registrations for each event.
+     * ADMIN only.
      *
      * @return event registration count summary
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stats/registration-counts")
     public List<String> getRegistrationCountsPerEvent() {
         return service.getRegistrationCountsPerEvent();
@@ -122,9 +134,11 @@ public class EventController {
 
     /**
      * Returns the total number of tickets sold for each event.
+     * ADMIN only.
      *
      * @return event ticket sales summary
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stats/tickets-sold")
     public List<String> getTotalTicketsSoldPerEvent() {
         return service.getTotalTicketsSoldPerEvent();
